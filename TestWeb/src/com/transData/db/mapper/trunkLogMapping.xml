@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="trans.mapper.trunkLog">
+    <select id="getAllTransData" resultType="com.transData.trunkLog.entity.TrunkLog">
+        SELECT * from trunk_log
+    </select>
+    
+    <insert id="insertLog" parameterType="com.transData.trunkLog.entity.TrunkLog"> 
+    INSERT INTO trunk_log (log_id, serial_number, operator_no, request_data_json, response_data_json, log_time, trade_code, user_status, validate_status, validate_log, business_status, business_Exception_Msg, execute_Class, execute_Method, execute_Params, response_Code) 
+    VALUES (null,#{serialNumber},#{operatorNo},#{reqeustDataJson},#{responseDataJson},#{logTime},#{tradeCode},#{userStatus},#{validateStatus},#{validateLog},#{businessStatus},#{businessExceptionMsg},#{executeClass},#{executeMethod},#{executeParams},#{responseCode})
+    </insert>
+</mapper>

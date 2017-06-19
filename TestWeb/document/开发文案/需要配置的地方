@@ -1,0 +1,10 @@
+1.BusinessBeanFactory.getBeanFromSpringBean()
+	需要配置，这部分用于根据StringBean名称获取springServiceBean，因此需要配置springbean的获取方法。
+2.businessModelService.getBusinessModel(String busiCode);
+	此处配置业务模版组件，设置模版组件部分
+3.DataTransEntityCache
+	数据模版缓存生成方式需要单独设置
+4.DataValidateEntityCache
+	校验模版缓存声称方式需要单独设置
+5.DesignCommonServiceImpl的userJurisdictionByKey()方法
+	校验用户是否在线，以及密码是否还在有效期

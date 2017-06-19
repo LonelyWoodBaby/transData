@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="trans.mapper.dataValidateEntity">
+	<resultMap type="com.transData.validate.entity.dojo.DataValidateEntity" id="validateEntityMap">
+        <!-- 用result属性来映射非主键字段 -->
+        <id property="dataValidId" column="data_validate_id"/>
+        <result property="bussCode" column="buss_Code"/>
+        <result property="dataValidName" column="data_valid_name"/>
+    </resultMap>
+    <select id="getAllValidateData" resultMap="validateEntityMap">
+        SELECT * from data_validate_entity
+    </select>
+    
+    <select id="getAllValidateDataByCode" resultType="com.transData.validate.entity.dojo.DataValidateEntity" parameterType="String">
+        SELECT * from data_validate_entity where buss_Code = #{bussCode}
+    </select>
+</mapper>

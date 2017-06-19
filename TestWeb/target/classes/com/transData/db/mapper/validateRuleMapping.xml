@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="trans.mapper.validateRuleEntity">
+    <select id="getAllValidateRule" resultType="com.transData.validate.entity.dojo.ValidateRuleData">
+        SELECT * from validate_rule_data
+    </select>
+    
+    <select id="getAllValidateDataByEntityId" resultType="com.transData.validate.entity.dojo.ValidateRuleData" parameterType="Integer">
+        SELECT * from validate_rule_data where validate_entity_id = #{validateEntityId}
+    </select>
+</mapper>

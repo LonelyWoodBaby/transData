@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="trans.mapper.busiModelEntity">
+	<resultMap type="com.transData.business.entity.BusinessModel" id="busiModelMap">
+        <!-- 用id属性来映射主键字段 -->
+        <id property="model_id" column="model_id"/>
+        <!-- 用result属性来映射非主键字段 -->
+        <result property="serviceClassName" column="service_class_name"/>
+        <result property="servicePath" column="service_path"/>
+        <result property="serviceBeanName" column="service_bean_name"/>
+        <result property="methodName" column="method_name"/>
+        <result property="paramterObject" column="paramter_object"/>
+        <result property="paramterClass" column="paramter_class"/>
+        <result property="busiCode" column="busi_code"/>
+    </resultMap>
+    <select id="getAllTransData" resultMap="busiModelMap">
+        SELECT * from business_model
+    </select>
+    
+    <select id="getAllTransDataByCode" resultMap="busiModelMap" parameterType="String">
+        SELECT * from business_model where busi_Code = #{busiCode}
+    </select>
+</mapper>
