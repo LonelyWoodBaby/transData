@@ -7,6 +7,8 @@ import com.transData.business.service.BusinessModelService;
 import com.transData.business.service.DoBusinessService;
 import com.transData.business.service.impl.BusinessModelServiceImpl;
 import com.transData.business.service.impl.DoBusinessServiceImpl;
+import com.transData.db.common.CommonDbService;
+import com.transData.db.common.impl.CommonDbServiceImpl;
 import com.transData.port.service.CmsDataTransService;
 import com.transData.port.service.impl.CmsDataTransServiceImpl;
 import com.transData.port.util.service.DesignCommonService;
@@ -68,5 +70,10 @@ public class DataTransTestConfig {
 	@Bean
 	public BusinessModelService getBusinessModelService(){
 		return new BusinessModelServiceImpl();
+	}
+	
+	@Bean
+	public CommonDbService getCommonDbService(){
+		return new CommonDbServiceImpl();
 	}
 }

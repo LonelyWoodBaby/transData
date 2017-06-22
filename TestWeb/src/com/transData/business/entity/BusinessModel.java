@@ -13,6 +13,22 @@ public class BusinessModel {
 	private String resultMsg;				//返回的消息内容
 	private Object resultObject;			//执行后返回的数据类型
 	
+	private String commonServiceName;		//执行业务模板方法
+	private String columnNameType;			//如果执行模板业务时需要输入。确定表格与实体bean的映射模式，是驼峰原则or下划线方式
+	
+	
+	public String getColumnNameType() {
+		return columnNameType;
+	}
+	public void setColumnNameType(String columnNameType) {
+		this.columnNameType = columnNameType;
+	}
+	public String getCommonServiceName() {
+		return commonServiceName;
+	}
+	public void setCommonServiceName(String commonServiceName) {
+		this.commonServiceName = commonServiceName;
+	}
 	public String getBusiCode() {
 		return busiCode;
 	}

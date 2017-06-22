@@ -12,12 +12,18 @@ import com.transData.business.entity.BusinessModel;
 import com.transData.business.service.BusinessModelService;
 import com.transData.business.service.DoBusinessService;
 import com.transData.business.util.BusinessBeanFactory;
+import com.transData.db.common.CommonDbService;
+import com.transData.db.common.CommonServiceType;
 import com.transData.exception.BusinessException;
 import com.transData.trans.entity.DataTransEntity;
+import com.transData.util.ParametersUtil;
 
 public class DoBusinessServiceImpl implements DoBusinessService {
 	@Autowired
 	private BusinessModelService businessModelService;
+	
+	@Autowired
+	private CommonDbService commonDbService;
 
 	@Override
 	public BusinessModel callBusinessMethod(ArgumentsEntity argumentsEntity) throws BusinessException {
@@ -38,24 +44,58 @@ public class DoBusinessServiceImpl implements DoBusinessService {
 		BusinessModel model = businessModelService.getBusinessModel(argumentsEntity.getBusiCode());
 		//2.给参数类赋值
 		Object paramObject = null;
+		Object resultObject = null;
 		String targetClazzPath = model.getParamterClass();
 
+		//对参数对象进行赋值。如果能够反射出正确的参数对象，则可以执行模板化操作
 		if(targetClazzPath != null && !targetClazzPath.trim().isEmpty()){
 			paramObject = assignmentTargetClazzValue(targetClazzPath,argumentsEntity.getPrepareDataList());
 			model.setParamterObject(paramObject);
 		}
-		//3.反射调用这个方法和这个类(此处使用spring配置)
-		Object clazz = BusinessBeanFactory.getBeanFromSpringBean(model.getServiceBeanName());
-		model.setServiceClassName(clazz.getClass().getName());
-		Method execMethod = null;
-		Object resultObject = null;
-		if(paramObject == null){
-			execMethod = clazz.getClass().getDeclaredMethod(model.getMethodName());
-			resultObject = execMethod.invoke(clazz);
+		
+		
+		if(model.getCommonServiceName()!=null && !model.getCommonServiceName().isEmpty() && paramObject != null){
+			//3.1 如果该model存在模板方法，优先执行model执行模板方法
+			CommonServiceType serviceType = CommonServiceType.getServiceType(model.getCommonServiceName());
+			switch (serviceType) {
+			case INSERT:
+				resultObject = commonDbService.insertObject(paramObject, model.getColumnNameType());
+				break;
+			case UPDATE:
+				//TODO 修改部分的模板操作不建议在此处进行
+//				resultObject = commonDbService.insertObject(paramObject, model.getColumnNameType());
+				break;
+			case DELETE:
+				resultObject = commonDbService.deleteObject(paramObject, model.getColumnNameType());
+				break;
+			case SELECT_ONE:
+				resultObject = commonDbService.selectOneObject(paramObject, model.getColumnNameType());
+				break;
+			case SELECT_PAGE:
+				int startNum = getNumberValueFromDataArrayList(ParametersUtil.START_NUMBER_DATANAME,argumentsEntity.getPrepareDataList());
+				int endNum = getNumberValueFromDataArrayList(ParametersUtil.END_NUMBER_DATANAME,argumentsEntity.getPrepareDataList());
+				resultObject = commonDbService.selectAllObject(paramObject, startNum, endNum, model.getColumnNameType());
+			default:
+				break;
+			}
 		}else{
-			execMethod = clazz.getClass().getDeclaredMethod(model.getMethodName(),paramObject.getClass());
-			resultObject = execMethod.invoke(clazz,paramObject);
+			//3.2 如果不存在model模板方法，则反射调用这个方法和这个类(此处使用spring配置)
+			if(model.getServiceBeanName()==null || model.getServiceBeanName().isEmpty()){
+				throw new NoSuchMethodException("没有配置对应的业务执行方法，请在后台配置与【"+argumentsEntity.getBusiCode()+"】对应的业务bean或者模板发方法");
+			}
+			Object clazz = BusinessBeanFactory.getBeanFromSpringBean(model.getServiceBeanName());
+			model.setServiceClassName(clazz.getClass().getName());
+			Method execMethod = null;
+			
+			if(paramObject == null){
+				execMethod = clazz.getClass().getDeclaredMethod(model.getMethodName());
+				resultObject = execMethod.invoke(clazz);
+			}else{
+				execMethod = clazz.getClass().getDeclaredMethod(model.getMethodName(),paramObject.getClass());
+				resultObject = execMethod.invoke(clazz,paramObject);
+			}
 		}
+		
 		//4.给返回值赋值
 		model.setResultObject(resultObject);
 		if(resultObject instanceof String || resultObject instanceof Integer || resultObject instanceof Double || resultObject.getClass().isPrimitive()){
@@ -113,41 +153,13 @@ public class DoBusinessServiceImpl implements DoBusinessService {
 		}
 		return targetClazz;
 	}
+	
+	private Integer getNumberValueFromDataArrayList (String dataName,List<DataTransEntity> prepareDataList){
+		for(DataTransEntity entity: prepareDataList){
+			if(entity.getDataTransName().equalsIgnoreCase(dataName)){
+				return  Integer.valueOf(entity.getDataValue());
+			}
+		}
+		return null;
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

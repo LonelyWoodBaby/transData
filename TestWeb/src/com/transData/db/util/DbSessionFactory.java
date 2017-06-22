@@ -1,6 +1,8 @@
 package com.transData.db.util;
 
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -22,6 +24,19 @@ public class DbSessionFactory {
 	public static SqlSession getSqlSession(){
 		if(sessionFactory == null)sessionFactory = initSqlSessionFactory();
 		return sessionFactory.openSession();
+	}
+	
+	public static Connection getConnection(){
+		if(sessionFactory == null)sessionFactory = initSqlSessionFactory();
+		try {
+			Connection connection = sessionFactory.openSession().getConfiguration().getEnvironment().getDataSource().getConnection();
+			connection.setAutoCommit(false);
+			return connection;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
 	}
 	
 	public static void closeSession(SqlSession session){

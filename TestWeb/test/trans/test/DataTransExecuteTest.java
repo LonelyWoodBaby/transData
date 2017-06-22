@@ -1,6 +1,7 @@
 package trans.test;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.transData.db.common.CommonDbService;
+import com.transData.exception.JsonTransException;
 import com.transData.port.entity.RequestMessageEntity;
 import com.transData.port.entity.ResponseMessageEntity;
 import com.transData.port.service.CmsDataTransService;
@@ -20,6 +23,7 @@ import com.transData.port.util.DesignCommonUtils;
 import com.transData.trans.entity.DataTransEntity;
 import com.transData.trans.service.DataTransConfigService;
 import com.transData.trans.service.DataTransExecuteService;
+import com.transData.util.JsonTrans;
 import com.transData.util.ParametersUtil;
 import com.transData.validate.entity.service.ValidateEntityService;
 import com.transData.validate.log.ValidateLogFactory;
@@ -50,6 +54,9 @@ public class DataTransExecuteTest {
 	
 	@Autowired
 	private CmsDataTransService cmsDataTransService;
+	
+	@Autowired
+	private CommonDbService commonDbService;
 	/**
 	 * 初始化测试数据
 	 */
@@ -89,17 +96,47 @@ public class DataTransExecuteTest {
 		System.out.println(validateLog.showLog());
 	}
 	
-	@Test
+	@Ignore
 	public void testAnalysisRequestMessage(){
 		ResponseMessageEntity response = cmsDataTransService.analysisRequestMessage(request);
 		Assert.assertNotNull(response);
 		System.out.println(response.getResponseMessage());
 	}
+	
+	@Test
+	public void testCommonSelect() throws JsonTransException{
+		DataTransEntity dataTransEntity = new DataTransEntity();
+		dataTransEntity.setDataTransName("name1");
+		dataTransEntity.setBussCode("testTrans1");
+		Map<String,Object> resultMap = commonDbService.selectOneObject(dataTransEntity,ParametersUtil.COLUMN_CAMEL2UPLINE);
+		System.out.println(JsonTrans.ObjectToStr(resultMap));
+		
+//		dataTransEntity.setBussCode("testInsert");
+//		dataTransEntity.setDataTransName("dataInsertName");
+//		dataTransEntity.setShowChnName("测试一下插入");
+//		boolean result = commonDbService.insertObject(dataTransEntity, ParametersUtil.COLUMN_CAMEL2UPLINE);
+//		System.out.println(result);
+		
+//		dataTransEntity.setBussCode("testUpdate");
+//		dataTransEntity.setDataTransName("dataUpdateName");
+//		dataTransEntity.setShowChnName("测试一下修改");
+		
+//		DataTransEntity oldEntity = new DataTransEntity();
+//		oldEntity.setDataTransId("218");
+////		boolean result = commonDbService.updateObject(dataTransEntity, oldEntity, ParametersUtil.COLUMN_CAMEL2UPLINE);
+////		System.out.println(result);
+//		boolean result = commonDbService.deleteObject(oldEntity, ParametersUtil.COLUMN_CAMEL2UPLINE);
+//		System.out.println(result);
+		
+		DataTransEntity selectAllEntity = new DataTransEntity();
+		List<Map<String,Object>> allListMap = commonDbService.selectAllObject(selectAllEntity, 20, 30, ParametersUtil.COLUMN_CAMEL2UPLINE);
+		System.out.println(JsonTrans.ObjectToStr(allListMap));
+
+	}
 
 	public void setDtes(DataTransExecuteService dtes) {
 		this.dtes = dtes;
 	}
-
 
 	public void setVes(ValidateEntityService ves) {
 		this.ves = ves;
@@ -112,5 +149,8 @@ public class DataTransExecuteTest {
 	public void setCmsDataTransService(CmsDataTransService cmsDataTransService) {
 		this.cmsDataTransService = cmsDataTransService;
 	}
-	
+
+	public void setCommonDbService(CommonDbService commonDbService) {
+		this.commonDbService = commonDbService;
+	}
 }

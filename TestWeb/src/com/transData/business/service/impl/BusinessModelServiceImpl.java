@@ -1,11 +1,13 @@
 package com.transData.business.service.impl;
 
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.stereotype.Service;
 
 import com.transData.business.entity.BusinessModel;
 import com.transData.business.service.BusinessModelService;
 import com.transData.db.util.DbSessionFactory;
 
+@Service
 public class BusinessModelServiceImpl implements BusinessModelService {
 
 	//TODO 这里都是测试用的，以后需要删除

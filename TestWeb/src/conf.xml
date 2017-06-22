@@ -24,6 +24,7 @@
     	<mapper resource="com/transData/db/mapper/dataValidateMapping.xml"/>
     	<mapper resource="com/transData/db/mapper/trunkLogMapping.xml"/>
     	<mapper resource="com/transData/db/mapper/validateRuleMapping.xml"/>
+    	<mapper resource="com/transData/db/mapper/commonSqlMapping.xml"/>
     </mappers>
     
 </configuration>
