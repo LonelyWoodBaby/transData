@@ -12,6 +12,8 @@
         <result property="paramterObject" column="paramter_object"/>
         <result property="paramterClass" column="paramter_class"/>
         <result property="busiCode" column="busi_code"/>
+        <result property="commonServiceName" column="common_service_name"/>
+        <result property="columnNameType" column="column_name_type"/>
     </resultMap>
     <select id="getAllTransData" resultMap="busiModelMap">
         SELECT * from business_model

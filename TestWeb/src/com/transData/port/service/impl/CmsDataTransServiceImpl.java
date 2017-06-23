@@ -39,15 +39,17 @@ public class CmsDataTransServiceImpl implements CmsDataTransService{
 	@Override
 	public ResponseMessageEntity analysisRequestMessage(RequestMessageEntity request) {
 		TrunkLog log = insertRequestMessageToLog(request);
+		//0.校验Request的合法性
+		String valiResult = validateRequestMessage(request);
+		if(valiResult !=null){
+			return processResponseAndLog(log,ResponseStatus.MESSAGE_COMPLETE_FAILED,valiResult);
+		}
 		//1.
 		//校验请求的用户可用性
 		//将请求到报文数据插入到日志表或日志文件中（包含校验结果）
 		//如果可用性失败，此时进行返回
 		if(!designCommonService.userJurisdictionByKey(request.getOperatorNo(), request.getPassworkKey())){
-			ResponseMessageEntity responseMessageEntity = DesignCommonUtils.createNewResponseMessage(ResponseStatus.USER_STATUS_ABNORMAL);
-			insertResponseMessageLog(log,ResponseStatus.USER_STATUS_ABNORMAL,responseMessageEntity);
-			responseMessageEntity.setSerialNumber(log.getSerialNumber());
-			return responseMessageEntity;
+			return processResponseAndLog(log,ResponseStatus.USER_STATUS_ABNORMAL);
 		}
 		//2.
 		//根据交易主码查询到所需的数据模板
@@ -61,10 +63,7 @@ public class CmsDataTransServiceImpl implements CmsDataTransService{
 		ValidateLog validateLog = validateLogFactory.createValidateResultLog(businessCode, prepareDataList);
 		if(!validateLog.isValidateStatus()){
 			String responseBody = validateLog.showLog();
-			ResponseMessageEntity responseMessageEntity = DesignCommonUtils.createNewResponseMessage(ResponseStatus.DATA_VALIDATE_FAILED, responseBody); 
-			insertResponseMessageLog(log,ResponseStatus.DATA_VALIDATE_FAILED,responseMessageEntity,responseBody);
-			responseMessageEntity.setSerialNumber(log.getSerialNumber());
-			return responseMessageEntity;
+			return processResponseAndLog(log,ResponseStatus.DATA_VALIDATE_FAILED,responseBody);
 		}
 		//3.
 		//如果校验通过则请求业务接口，将校验过的数据匹配成业务bean，发给业务接口进行处理
@@ -125,8 +124,8 @@ public class CmsDataTransServiceImpl implements CmsDataTransService{
 				log.setBusinessStatus("0");
 			}
 			log.setBusinessExceptionMsg(paramster[0]);
-			log.setExecuteClass(paramster[1]);
-			log.setExecuteMethod(paramster[2]);
+			if(paramster.length>=2)log.setExecuteClass(paramster[1]);
+			if(paramster.length>=3)log.setExecuteMethod(paramster[2]);
 		}
 		log.setResponseCode(responseMessageEntity.getResponseCode());
 		try {
@@ -159,6 +158,26 @@ public class CmsDataTransServiceImpl implements CmsDataTransService{
 		log.setLogTime(DesignCommonUtils.getDateTimeForNow());
 		log.setOperatorNo(request.getOperatorNo());
 		return log;
+	}
+	
+	/**
+	 * 进行报文完整性校验。如果返回值不为空，则意味着有返回信息，完整性校验失败。将返回信息返给日志并回复给请求端
+	 * @param request
+	 * @return
+	 */
+	private String validateRequestMessage(RequestMessageEntity request){
+		if(request.getOperatorNo()==null || request.getOperatorNo().isEmpty())return "没有获取到操作员号码";
+		if(request.getDepartmentNo() == null || request.getDepartmentNo().isEmpty()) return "没有获取到机构号码";
+		if(request.getRequestTime() == null || request.getRequestTime().isEmpty())return "请求时间不能为空";
+		if(request.getTradeCode() == null || request.getTradeCode().isEmpty())return "交易主码不能为空";
+		return null;
+	}
+	
+	private ResponseMessageEntity processResponseAndLog(TrunkLog log,ResponseStatus status,String... paramster ){
+		ResponseMessageEntity responseMessageEntity = DesignCommonUtils.createNewResponseMessage(status);
+		insertResponseMessageLog(log,status,responseMessageEntity,paramster);
+		responseMessageEntity.setSerialNumber(log.getSerialNumber());
+		return responseMessageEntity;
 	}
 
 	public void setDesignCommonService(DesignCommonService designCommonService) {

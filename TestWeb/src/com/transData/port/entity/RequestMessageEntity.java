@@ -3,14 +3,14 @@ package com.transData.port.entity;
 
 public class RequestMessageEntity {
 	private String serialNumber;
-	private String operatorNo;//操作员编号
-	private String departmentNo;//操作员机构号/部门号
-	private String passworkKey;//交易公钥
-	private String requestTime;//请求时间
-	private String tradeCode;//交易主码
-	private String assistCode;//交易辅码
-	private String businessBody;//交易报文主体
-	private String requestInfo;//请求附加消息说明
+	private String operatorNo;//操作员编号 必输
+	private String departmentNo;//操作员机构号/部门号 必输
+	private String passworkKey;//交易公钥 除登陆以外必输
+	private String requestTime;//请求时间 必输
+	private String tradeCode;//交易主码 必输
+	private String assistCode;//交易辅码 非必输
+	private String businessBody;//交易报文主体 非必输
+	private String requestInfo;//请求附加消息说明 非必输
 	
 	public String getSerialNumber() {
 		return serialNumber;

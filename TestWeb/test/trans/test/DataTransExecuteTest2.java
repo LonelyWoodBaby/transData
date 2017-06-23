@@ -60,7 +60,7 @@ public class DataTransExecuteTest2 {
 		request = new RequestMessageEntity();
 		request.setAssistCode("");
 		request.setBusinessBody(dataJson);
-		request.setDepartmentNo("");
+		request.setDepartmentNo("002003");
 		request.setOperatorNo("123");
 		request.setPassworkKey("noKey");
 		request.setRequestInfo("");
@@ -76,12 +76,19 @@ public class DataTransExecuteTest2 {
 		Assert.assertNotNull(response);
 		System.out.println(response.getBusinessBody());
 	}
-	@Test
+	@Ignore
 	public void sendRequestSpeedFor10000(){
 		for(int i = 0; i<50; i++){
 			cmsDataTransService.analysisRequestMessage(request);
 			System.out.println("---------------------已执行"+i+"次---------------------------");
 		}
+	}
+	
+	@Test
+	public void sendRequestForCommonService(){
+		ResponseMessageEntity response = cmsDataTransService.analysisRequestMessage(request);
+		Assert.assertNotNull(response);
+		System.out.println(response.getBusinessBody());
 	}
 
 	public void setDtes(DataTransExecuteService dtes) {

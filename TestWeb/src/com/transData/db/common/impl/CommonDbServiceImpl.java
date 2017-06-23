@@ -199,7 +199,7 @@ public class CommonDbServiceImpl implements CommonDbService {
 				if("java.lang.String".equals(columnMap.get(columnName).getClass().getTypeName())){
 					valueSql.append("'").append(columnMap.get(columnName)).append("',");
 				}else{
-					valueSql.append(columnMap.get(columnName)).append("',");
+					valueSql.append(columnMap.get(columnName)).append(",");
 				}
 			}
 		}

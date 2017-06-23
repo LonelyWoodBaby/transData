@@ -1,6 +1,7 @@
 package com.transData.port.util;
 
 public enum ResponseStatus {
+	MESSAGE_COMPLETE_FAILED("001","报文完整性验证异常"),
 	USER_STATUS_ABNORMAL("101","用户状态异常"),
 	DATA_VALIDATE_FAILED("302","数据校验失败"),
 	BUSINESS_ACCEPT_SUCCESS("200","业务受理成功"),
